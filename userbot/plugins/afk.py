@@ -52,18 +52,18 @@ async def set_not_afk(event):
         s = time
         endtime = ""
         if d > 0:
-            endtime += f"{d}روز {h}ساعت {m}دقیقه {s}ثانیه"
+            endtime += f"{d} روز {h} ساعت {m} دقیقه {s} ثانیه"
         elif h > 0:
-            endtime += f"{h}ساعت {m}دقیقه {s}ثانیه"
+            endtime += f"{h} ساعت {m} دقیقه {s} ثانیه"
         else:
-            endtime += f"{m}دقیقه {s}قانیه" if m > 0 else f"{s}ثانیه"
+            endtime += f"{m} دقیقه {s} قانیه" if m > 0 else f"{s} ثانیه"
     current_message = event.message.message
     if (("afk" not in current_message) or ("#afk" not in current_message)) and (
         "on" in AFK_.USERAFK_ON
     ):
         shite = await event.client.send_message(
             event.chat_id,
-            f"😂خب من آنلاینم \n برای  مدت {endtime} افلاین بودم "  + "",
+            f"❤️😂 خب من آنلاینم \n برای  مدت {endtime} افلاین بودم "  + "",
         )
         AFK_.USERAFK_ON = {}
         AFK_.afk_time = None
@@ -100,11 +100,11 @@ async def on_afk(event):  # sourcery no-metrics
         s = time
         endtime = ""
         if d > 0:
-            endtime += f"{d}روز {h}ساعت {m}دقیقه {s}ثانیه"
+            endtime += f"{d} روز {h} ساعت {m} دقیقه {s} ثانیه"
         elif h > 0:
-            endtime += f"{h}ساعت {m}دقیقه {s}قانیه"
+            endtime += f"{h} ساعت {m} دقیقه {s} قانیه"
         else:
-            endtime += f"{m}دقیقه {s}ثانیه" if m > 0 else f"{s}ثانیه"
+            endtime += f"{m} دقیقه {s} ثانیه" if m > 0 else f"{s} ثانیه"
     current_message_text = event.message.message.lower()
     if "afk" in current_message_text or "#afk" in current_message_text:
         return False
@@ -114,20 +114,20 @@ async def on_afk(event):  # sourcery no-metrics
         msg = None
         if AFK_.afk_type == "media":
             if AFK_.reason:
-                message_to_reply = f"من آفلاینم داداش \n\n به مدت انقد آفلاین بودم : {endtime} \n به دلیل : {AFK_.reason}"
+                message_to_reply = f"😂 من آفلاینم داداش \n\n به مدت انقد آفلاین بودم : {endtime} \n به دلیل : {AFK_.reason}"
             else:
-                f"`من آفلاینم داداش \n\n به مدت انقد آفلاین بودم : {endtime}"
+                f"😂 من آفلاینم داداش \n\n به مدت انقد آفلاین بودم : {endtime}"
             if event.chat_id:
                 msg = await event.reply(message_to_reply, file=AFK_.media_afk.media)
         elif AFK_.afk_type == "text":
             if AFK_.msg_link and AFK_.reason:
-                message_to_reply = f"**من آفلاینم داداش \n\n به مدت انقد آفلاین بودم : {endtime} \n به دلیل : **{AFK_.reason}"
+                message_to_reply = f"**😂 من آفلاینم داداش \n\n به مدت انقد آفلاین بودم : {endtime} \n به دلیل : **{AFK_.reason}"
             elif AFK_.reason:
-                message_to_reply = f"من آفلاینم داداش \n\n به مدت انقد آفلاین بودم : {endtime} \n به دلیل : {AFK_.reason}"
+                message_to_reply = f"😂 من آفلاینم داداش \n\n به مدت انقد آفلاین بودم : {endtime} \n به دلیل : {AFK_.reason}"
 
             else:
                 message_to_reply = (
-                    f"من آفلاینم داداش \n\n به مدت انقد آفلاین بودم : {endtime}"
+                    f"😂 من آفلاینم داداش \n\n به مدت انقد آفلاین بودم : {endtime}"
                 )
             if event.chat_id:
                 msg = await event.reply(message_to_reply)
@@ -205,7 +205,7 @@ async def _(event):
         AFK_.USERAFK_ON = f"on: {AFK_.reason}"
         if AFK_.reason:
             await edit_delete(
-                event, f"خب عزیزان من دارم آفلاین میشم😂 \n بخاطر : {AFK_.reason}", 5
+                event, f" ❤️😂 خب عزیزان من دارم آفلاین میشم \n بخاطر : {AFK_.reason}", 5
             )
         else:
             await edit_delete(event, "خب عزیزان من دارم آفلاین میشم", 5)
