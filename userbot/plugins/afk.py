@@ -63,7 +63,7 @@ async def set_not_afk(event):
     ):
         shite = await event.client.send_message(
             event.chat_id,
-            "`😂خب من آنلاینم \n برای این مدت افلاین بودم " + endtime + "`",
+            "😂خب من آنلاینم \n برای این مدت افلاین بودم " + endtime + "",
         )
         AFK_.USERAFK_ON = {}
         AFK_.afk_time = None
@@ -115,7 +115,7 @@ async def on_afk(event):  # sourcery no-metrics
         if AFK_.afk_type == "media":
             if AFK_.reason:
                 message_to_reply = (
-                    f"`من آفلاینم داداش \n\n به مدت انقد آفلاین بودم : {endtime} \n به دلیل : {AFK_.reason}`"
+                    f"من آفلاینم داداش \n\n به مدت انقد آفلاین بودم : {endtime} \n به دلیل : {AFK_.reason}"
 
                 )
             else:
@@ -125,15 +125,15 @@ async def on_afk(event):  # sourcery no-metrics
         elif AFK_.afk_type == "text":
             if AFK_.msg_link and AFK_.reason:
                 message_to_reply = (
-                    f"`**من آفلاینم داداش \n\n به مدت انقد آفلاین بودم : {endtime} \n به دلیل : **{AFK_.reason}`"
+                    f"**من آفلاینم داداش \n\n به مدت انقد آفلاین بودم : {endtime} \n به دلیل : **{AFK_.reason}"
                 )
             elif AFK_.reason:
                 message_to_reply = (
-                    f"`من آفلاینم داداش \n\n به مدت انقد آفلاین بودم : {endtime} \n به دلیل : {AFK_.reason}`"
+                    f"من آفلاینم داداش \n\n به مدت انقد آفلاین بودم : {endtime} \n به دلیل : {AFK_.reason}"
                 )
                 
             else:
-                message_to_reply =  f"`من آفلاینم داداش \n\n به مدت انقد آفلاین بودم : {endtime}"
+                message_to_reply =  f"من آفلاینم داداش \n\n به مدت انقد آفلاین بودم : {endtime}"
             if event.chat_id:
                 msg = await event.reply(message_to_reply)
         if event.chat_id in AFK_.last_afk_message:
