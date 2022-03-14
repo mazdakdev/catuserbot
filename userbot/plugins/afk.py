@@ -52,18 +52,18 @@ async def set_not_afk(event):
         s = time
         endtime = ""
         if d > 0:
-            endtime += f"روز{d} ساعت{h} دقیقه{m} ثانیه{s}"
+            endtime += f"{d}روز {h}ساعت {m}دقیقه {s}ثانیه"
         elif h > 0:
-            endtime += f"ساعت{h} دقیقه{m} ثانیه{s}"
+            endtime += f"{h}ساعت {m}دقیقه {s}ثانیه"
         else:
-            endtime += f"دقیقه{m} قانیه{s}" if m > 0 else f"ثانیه{s}"
+            endtime += f"{m}دقیقه {s}قانیه" if m > 0 else f"{s}ثانیه"
     current_message = event.message.message
     if (("afk" not in current_message) or ("#afk" not in current_message)) and (
         "on" in AFK_.USERAFK_ON
     ):
         shite = await event.client.send_message(
             event.chat_id,
-            "😂خب من آنلاینم \n برای این مدت افلاین بودم " + endtime + "",
+            f"😂خب من آنلاینم \n برای  مدت {endtime} افلاین بودم "  + "",
         )
         AFK_.USERAFK_ON = {}
         AFK_.afk_time = None
@@ -100,11 +100,11 @@ async def on_afk(event):  # sourcery no-metrics
         s = time
         endtime = ""
         if d > 0:
-            endtime += f"{d}d {h}h {m}m {s}s"
+            endtime += f"{d}روز {h}ساعت {m}دقیقه {s}ثانیه"
         elif h > 0:
-            endtime += f"{h}h {m}m {s}s"
+            endtime += f"{h}ساعت {m}دقیقه {s}قانیه"
         else:
-            endtime += f"{m}m {s}s" if m > 0 else f"{s}s"
+            endtime += f"{m}دقیقه {s}ثانیه" if m > 0 else f"{s}ثانیه"
     current_message_text = event.message.message.lower()
     if "afk" in current_message_text or "#afk" in current_message_text:
         return False
