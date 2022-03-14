@@ -56,7 +56,7 @@ async def set_not_afk(event):
         elif h > 0:
             endtime += f"{h} ساعت {m} دقیقه {s} ثانیه"
         else:
-            endtime += f"{m} دقیقه {s} قانیه" if m > 0 else f"{s} ثانیه"
+            endtime += f"{m} دقیقه {s} ثانیه" if m > 0 else f"{s} ثانیه"
     current_message = event.message.message
     if (("afk" not in current_message) or ("#afk" not in current_message)) and (
         "on" in AFK_.USERAFK_ON
@@ -102,7 +102,7 @@ async def on_afk(event):  # sourcery no-metrics
         if d > 0:
             endtime += f"{d} روز {h} ساعت {m} دقیقه {s} ثانیه"
         elif h > 0:
-            endtime += f"{h} ساعت {m} دقیقه {s} قانیه"
+            endtime += f"{h} ساعت {m} دقیقه {s} ثانیه"
         else:
             endtime += f"{m} دقیقه {s} ثانیه" if m > 0 else f"{s} ثانیه"
     current_message_text = event.message.message.lower()
