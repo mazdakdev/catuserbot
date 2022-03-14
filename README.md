@@ -23,6 +23,10 @@ A simple Telegram userbot based on Telethon .
 
 ### Self host
   - [check this](https://catuserbot.gitbook.io/catuserbot/tutorial/self-host)
+
+- - - -
+### Forked from [this](https://github.com/TgCatUB/catuserbot) repository
+- - - - 
   
 ## Support
    <a href="https://t.me/catuserbot17"><img src="https://img.shields.io/badge/Channel%20Support%3F-yes-green?&style=flat-square?&logo=telegram" width=220px></a></p>
