@@ -1,8 +1,11 @@
-from userbot import catub
-from ..core.managers import edit_or_reply
 import requests
 
-plugin_category="utils"
+from userbot import catub
+
+from ..core.managers import edit_or_reply
+
+plugin_category = "utils"
+
 
 @catub.cat_cmd(
     pattern="tr$",
@@ -22,18 +25,12 @@ async def tr(event):
         fa = requests.get(f"https://api.codebazan.ir/fintofa/?text={text}")
 
         fa = fa.json()
-        
+
         if fa["ok"]:
             result = fa["result"]
-            await edit_or_reply(event , result)
+            await edit_or_reply(event, result)
         else:
-            await edit_or_reply(event , "متاسفانه تبدیل شکست خورد داداش🥲")
+            await edit_or_reply(event, "متاسفانه تبدیل شکست خورد داداش🥲")
 
     else:
-        await edit_or_reply(event , "باید رو پیام ریپلای بزنی برادر من")
-
-
-
-
-
- 
+        await edit_or_reply(event, "باید رو پیام ریپلای بزنی برادر من")

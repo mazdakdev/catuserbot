@@ -1,7 +1,9 @@
 from userbot import catub
+
 from ..helpers.utils import reply_id
 
-plugin_category="fun"
+plugin_category = "fun"
+
 
 @catub.cat_cmd(
     pattern="soraya$",
@@ -27,7 +29,7 @@ async def soraya(event):
         "چشماش همرنگ دریاست",
         reply_to=reply_to_id,
     )
-    
+
     await event.client.send_message(
         event.chat_id,
         "آره اسمش ثریاست تنش برگ گل یاس",
@@ -40,21 +42,17 @@ async def soraya(event):
         reply_to=reply_to_id,
     )
 
-
     await event.client.send_message(
         event.chat_id,
         "صدای خنده هاش میاد",
         reply_to=reply_to_id,
     )
 
-    
-
     await event.client.send_message(
         event.chat_id,
         "نسیم سبزه زار میاد",
         reply_to=reply_to_id,
     )
-
 
     await event.client.send_message(
         event.chat_id,
@@ -81,4 +79,3 @@ async def soraya(event):
         "اون مژده ی سحر میاد",
         reply_to=reply_to_id,
     )
-    
