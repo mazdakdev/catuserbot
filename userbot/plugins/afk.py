@@ -63,7 +63,7 @@ async def set_not_afk(event):
     ):
         shite = await event.client.send_message(
             event.chat_id,
-            "`Back alive! No Longer afk.\nWas afk for " + endtime + "`",
+            "`😂خب من آنلاینم \n برای این مدت افلاین بودم " + endtime + "`",
         )
         AFK_.USERAFK_ON = {}
         AFK_.afk_time = None
@@ -115,23 +115,25 @@ async def on_afk(event):  # sourcery no-metrics
         if AFK_.afk_type == "media":
             if AFK_.reason:
                 message_to_reply = (
-                    f"`I am AFK .\n\nAFK Since {endtime}\nReason : {AFK_.reason}`"
+                    f"`من آفلاینم داداش \n\n به مدت انقد آفلاین بودم : {endtime} \n به دلیل : {AFK_.reason}`"
+
                 )
             else:
-                message_to_reply = f"`I am AFK .\n\nAFK Since {endtime}\nReason : Not Mentioned ( ಠ ʖ̯ ಠ)`"
+                f"`من آفلاینم داداش \n\n به مدت انقد آفلاین بودم : {endtime}"
             if event.chat_id:
                 msg = await event.reply(message_to_reply, file=AFK_.media_afk.media)
         elif AFK_.afk_type == "text":
             if AFK_.msg_link and AFK_.reason:
                 message_to_reply = (
-                    f"**I am AFK .\n\nAFK Since {endtime}\nReason : **{AFK_.reason}"
+                    f"`**من آفلاینم داداش \n\n به مدت انقد آفلاین بودم : {endtime} \n به دلیل : **{AFK_.reason}`"
                 )
             elif AFK_.reason:
                 message_to_reply = (
-                    f"`I am AFK .\n\nAFK Since {endtime}\nReason : {AFK_.reason}`"
+                    f"`من آفلاینم داداش \n\n به مدت انقد آفلاین بودم : {endtime} \n به دلیل : {AFK_.reason}`"
                 )
+                
             else:
-                message_to_reply = f"`I am AFK .\n\nAFK Since {endtime}\nReason : Not Mentioned ( ಠ ʖ̯ ಠ)`"
+                message_to_reply =  f"`من آفلاینم داداش \n\n به مدت انقد آفلاین بودم : {endtime}"
             if event.chat_id:
                 msg = await event.reply(message_to_reply)
         if event.chat_id in AFK_.last_afk_message:
@@ -208,10 +210,10 @@ async def _(event):
         AFK_.USERAFK_ON = f"on: {AFK_.reason}"
         if AFK_.reason:
             await edit_delete(
-                event, f"`I shall be Going afk! because ~` {AFK_.reason}", 5
+                event, f" `خب عزیزان من دارم آفلاین میشم😂` \n بخاطر : {AFK_.reason}", 5
             )
         else:
-            await edit_delete(event, "`I shall be Going afk! `", 5)
+            await edit_delete(event, "`خب عزیزان من دارم آفلاین میشم`", 5)
         if BOTLOG:
             if AFK_.reason:
                 await event.client.send_message(
