@@ -210,10 +210,10 @@ async def _(event):
         AFK_.USERAFK_ON = f"on: {AFK_.reason}"
         if AFK_.reason:
             await edit_delete(
-                event, f" `خب عزیزان من دارم آفلاین میشم😂` \n بخاطر : {AFK_.reason}", 5
+                event, f"خب عزیزان من دارم آفلاین میشم😂 \n بخاطر : {AFK_.reason}", 5
             )
         else:
-            await edit_delete(event, "`خب عزیزان من دارم آفلاین میشم`", 5)
+            await edit_delete(event, "خب عزیزان من دارم آفلاین میشم", 5)
         if BOTLOG:
             if AFK_.reason:
                 await event.client.send_message(
