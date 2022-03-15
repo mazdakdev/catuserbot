@@ -43,7 +43,7 @@ async def fiat(event):
             + f"درصد : {percent} %"
         )
 
-        await edit_or_reply(event, caption)
+        await event.client.send_message(event.chat_id, caption)
 
 
 @catub.cat_cmd(
@@ -81,7 +81,7 @@ async def gold(event):
             + f"درصد : {percent} %"
         )
 
-        await edit_or_reply(event, caption)
+        await event.client.send_message(event.chat_id, caption)
 
 
 
@@ -99,7 +99,7 @@ async def crypto(event):
     await reply_id(event)
     input_str = event.pattern_match.group(1)
     if "," in input_str:
-        ids = str(input_str).replace(",")
+        ids = str(input_str).split(",")
     else:
         await edit_or_reply(event, "هیچی ندادی که برادر")
 
@@ -109,7 +109,5 @@ async def crypto(event):
     for crypto in res:
         name = crypto["name"]
         price = crypto["price"]
-
         caption = f"Name : {name}" + "\n" + f"Price : {price}$"
-
-        await edit_or_reply(event, caption)
+        await event.client.send_message(event.chat_id, caption)
