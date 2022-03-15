@@ -121,13 +121,13 @@ async def do_pm_permit_action(event, chat):  # sourcery no-metrics
     elif gvarstatus("pmmenu") is None:
         USER_BOT_NO_WARN = f"""سلام {mention} مزدک هنوز درخواست چت با شمارو قبول نکرده
 
-شما {warns}/{totalwarns} اخطار دارید تا توسظ ربات به صورت خودکار بن شوید
+شما {warns}/{totalwarns} اخطار دارید تا توسط ربات به صورت خودکار بن شوید
 
  لطفا یکی از دلایل زیر رو انتخاب کنید تا به مزدک اطلاع بدم"""
     else:
         USER_BOT_NO_WARN = f"""سلام {mention} مزدک هنوز درخواست چت با شمارو قبول نکرده
 
-شما {warns}/{totalwarns} اخطار دارید تا توسظ ربات به صورت خودکار بن شوید
+شما {warns}/{totalwarns} اخطار دارید تا توسط ربات به صورت خودکار بن شوید
 
  لطفا یکی از دلایل زیر رو انتخاب کنید تا به مزدک اطلاع بدم"""
 
