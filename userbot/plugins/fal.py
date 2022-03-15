@@ -1,5 +1,4 @@
 from userbot import catub
-from ..helpers.utils import reply_id
 import random
 
 plugin_category = "fun"
@@ -15,8 +14,6 @@ plugin_category = "fun"
     },
 )
 async def fal(event):
-    reply_to_id = await reply_id(event)
-
     fal_number = random.randrange(1,150)
     url = f"http://api.codebazan.ir/fal/hafez/{fal_number}.gif"
 
