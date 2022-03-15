@@ -99,7 +99,7 @@ async def crypto(event):
     await reply_id(event)
     input_str = event.pattern_match.group(1)
     if "," in input_str:
-        ids = str(input_str).split(",")
+        ids = input_str.split(",")
     else:
         await edit_or_reply(event, "هیچی ندادی که برادر")
 
