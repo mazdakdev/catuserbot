@@ -204,7 +204,7 @@ async def do_pm_options_action(event, chat):
     sql.del_collection("pmmessagecache")
     sql.add_collection("pmmessagecache", PMMESSAGE_CACHE, {})
     USER_BOT_WARN_ZERO = (
-        "متاسفانه به حرفم گوش ندادی و بلاگ شدی حالا باید صبر کنی مزدک بیاد و چک کنه"
+        "متاسفانه به حرفم گوش ندادی و بلاک شدی حالا باید صبر کنی مزدک بیاد و چک کنه"
     )
 
     await event.reply(USER_BOT_WARN_ZERO)
@@ -252,7 +252,7 @@ async def do_pm_enquire_action(event, chat):
     sql.del_collection("pmmessagecache")
     sql.add_collection("pmmessagecache", PMMESSAGE_CACHE, {})
     USER_BOT_WARN_ZERO = (
-        "متاسفانه به حرفم گوش ندادی و بلاگ شدی حالا باید صبر کنی مزدک بیاد و چک کنه"
+        "متاسفانه به حرفم گوش ندادی و بلاک شدی حالا باید صبر کنی مزدک بیاد و چک کنه"
     )
 
     await event.reply(USER_BOT_WARN_ZERO)
@@ -300,7 +300,7 @@ async def do_pm_request_action(event, chat):
     sql.del_collection("pmmessagecache")
     sql.add_collection("pmmessagecache", PMMESSAGE_CACHE, {})
     USER_BOT_WARN_ZERO = (
-        "متاسفانه به حرفم گوش ندادی و بلاگ شدی حالا باید صبر کنی مزدک بیاد و چک کنه"
+        "متاسفانه به حرفم گوش ندادی و بلاک شدی حالا باید صبر کنی مزدک بیاد و چک کنه"
     )
 
     await event.reply(USER_BOT_WARN_ZERO)
@@ -348,7 +348,7 @@ async def do_pm_chat_action(event, chat):
     sql.del_collection("pmmessagecache")
     sql.add_collection("pmmessagecache", PMMESSAGE_CACHE, {})
     USER_BOT_WARN_ZERO = (
-        "متاسفانه به حرفم گوش ندادی و بلاگ شدی حالا باید صبر کنی مزدک بیاد و چک کنه"
+        "متاسفانه به حرفم گوش ندادی و بلاک شدی حالا باید صبر کنی مزدک بیاد و چک کنه"
     )
 
     await event.reply(USER_BOT_WARN_ZERO)
@@ -378,7 +378,7 @@ async def do_pm_spam_action(event, chat):
     except Exception as e:
         LOGS.info(str(e))
     USER_BOT_WARN_ZERO = (
-        "متاسفانه به حرفم گوش ندادی و بلاگ شدی حالا باید صبر کنی مزدک بیاد و چک کنه"
+        "متاسفانه به حرفم گوش ندادی و بلاک شدی حالا باید صبر کنی مزدک بیاد و چک کنه"
     )
 
     await event.reply(USER_BOT_WARN_ZERO)
