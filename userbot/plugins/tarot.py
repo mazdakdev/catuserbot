@@ -55,7 +55,7 @@ async def tarot(event):
 
         for i in meaning_rev:
             fmeaning_rev.append(translator.translate(str(i), dest="fa").text)
-            
+
         caption = (
             f"نام : {name} | {tname} "
             + "\n"

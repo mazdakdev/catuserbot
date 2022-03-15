@@ -16,7 +16,6 @@ from ..sql_helper import global_collectionjson as sql
 from ..sql_helper import global_list as sqllist
 from ..sql_helper import pmpermit_sql
 from ..sql_helper.globals import addgvar, delgvar, gvarstatus
-from . import mention
 
 plugin_category = "utils"
 LOGS = logging.getLogger(__name__)
@@ -204,7 +203,9 @@ async def do_pm_options_action(event, chat):
         LOGS.info(str(e))
     sql.del_collection("pmmessagecache")
     sql.add_collection("pmmessagecache", PMMESSAGE_CACHE, {})
-    USER_BOT_WARN_ZERO = "متاسفانه به حرفم گوش ندادی و بلاگ شدی حالا باید صبر کنی مزدک بیاد و چک کنه"
+    USER_BOT_WARN_ZERO = (
+        "متاسفانه به حرفم گوش ندادی و بلاگ شدی حالا باید صبر کنی مزدک بیاد و چک کنه"
+    )
 
     await event.reply(USER_BOT_WARN_ZERO)
     await event.client(functions.contacts.BlockRequest(chat.id))
@@ -250,7 +251,9 @@ async def do_pm_enquire_action(event, chat):
         LOGS.info(str(e))
     sql.del_collection("pmmessagecache")
     sql.add_collection("pmmessagecache", PMMESSAGE_CACHE, {})
-    USER_BOT_WARN_ZERO = "متاسفانه به حرفم گوش ندادی و بلاگ شدی حالا باید صبر کنی مزدک بیاد و چک کنه"
+    USER_BOT_WARN_ZERO = (
+        "متاسفانه به حرفم گوش ندادی و بلاگ شدی حالا باید صبر کنی مزدک بیاد و چک کنه"
+    )
 
     await event.reply(USER_BOT_WARN_ZERO)
     await event.client(functions.contacts.BlockRequest(chat.id))
@@ -296,8 +299,9 @@ async def do_pm_request_action(event, chat):
         LOGS.info(str(e))
     sql.del_collection("pmmessagecache")
     sql.add_collection("pmmessagecache", PMMESSAGE_CACHE, {})
-    USER_BOT_WARN_ZERO = "متاسفانه به حرفم گوش ندادی و بلاگ شدی حالا باید صبر کنی مزدک بیاد و چک کنه"
-
+    USER_BOT_WARN_ZERO = (
+        "متاسفانه به حرفم گوش ندادی و بلاگ شدی حالا باید صبر کنی مزدک بیاد و چک کنه"
+    )
 
     await event.reply(USER_BOT_WARN_ZERO)
     await event.client(functions.contacts.BlockRequest(chat.id))
@@ -343,7 +347,9 @@ async def do_pm_chat_action(event, chat):
         LOGS.info(str(e))
     sql.del_collection("pmmessagecache")
     sql.add_collection("pmmessagecache", PMMESSAGE_CACHE, {})
-    USER_BOT_WARN_ZERO = "متاسفانه به حرفم گوش ندادی و بلاگ شدی حالا باید صبر کنی مزدک بیاد و چک کنه"
+    USER_BOT_WARN_ZERO = (
+        "متاسفانه به حرفم گوش ندادی و بلاگ شدی حالا باید صبر کنی مزدک بیاد و چک کنه"
+    )
 
     await event.reply(USER_BOT_WARN_ZERO)
     await event.client(functions.contacts.BlockRequest(chat.id))
@@ -371,7 +377,9 @@ async def do_pm_spam_action(event, chat):
             del PMMESSAGE_CACHE[str(chat.id)]
     except Exception as e:
         LOGS.info(str(e))
-    USER_BOT_WARN_ZERO = "متاسفانه به حرفم گوش ندادی و بلاگ شدی حالا باید صبر کنی مزدک بیاد و چک کنه"
+    USER_BOT_WARN_ZERO = (
+        "متاسفانه به حرفم گوش ندادی و بلاگ شدی حالا باید صبر کنی مزدک بیاد و چک کنه"
+    )
 
     await event.reply(USER_BOT_WARN_ZERO)
     await event.client(functions.contacts.BlockRequest(chat.id))
@@ -474,7 +482,11 @@ async def on_plug_in_callback_query_handler(event):
     buttons = [
         (Button.inline(text="سوال دارم", data="to_enquire_something"),),
         (Button.inline(text="درخواست دارم", data="to_request_something"),),
-        (Button.inline(text="میخوام باهاش حرف بزنم 😐💙", data="to_chat_with_my_master"),),
+        (
+            Button.inline(
+                text="میخوام باهاش حرف بزنم 😐💙", data="to_chat_with_my_master"
+            ),
+        ),
         (
             Button.inline(
                 text="میخوام اسپم کنم 😂",
