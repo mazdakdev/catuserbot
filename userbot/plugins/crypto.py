@@ -84,7 +84,6 @@ async def gold(event):
         await edit_or_reply(event, caption)
 
 
-
 @catub.cat_cmd(
     pattern="crypto ([\s\S]*)",
     command=("crypto", plugin_category),
