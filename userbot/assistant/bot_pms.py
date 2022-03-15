@@ -103,13 +103,13 @@ async def bot_start(event):
                 my_mention=my_mention,
             )
         else:
-            start_msg = f"Hey! 👤{mention},\
-                        \nI am {my_mention}'s assistant bot.\
-                        \nYou can contact to my boss from here."
+            start_msg = f"سلام 👤{mention}\
+                        \nمن دستیار هوشمند : {my_mention} هستم\
+                        \nمیتونی از طریق من با مزدک ارتباط بگیری"
         buttons = None
     else:
-        start_msg = "Hey Master!\
-            \nHow can i help you ?"
+        start_msg = "ببین کی اینجاست\
+            \nجانم سرورم"
         buttons = None
     try:
         await event.client.send_message(

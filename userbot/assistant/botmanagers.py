@@ -63,7 +63,8 @@ async def ban_user_from_bot(user, reason, reply_to=None):
     except Exception as e:
         LOGS.error(str(e))
     banned_msg = (
-        f"**You have been Banned Forever from using this bot.\nReason** : {reason}"
+        f"شما از ربات بن شدید \n به دلیل : {reason} "
+        
     )
     await catub.tgbot.send_message(user.id, banned_msg)
     info = f"**#Banned_Bot_PM_User**\
@@ -81,7 +82,7 @@ async def unban_user_from_bot(user, reason, reply_to=None):
         rem_user_from_bl(user.id)
     except Exception as e:
         LOGS.error(str(e))
-    banned_msg = "**You have been Unbanned from this bot. From now on you can send messages here to contact my master.**"
+    banned_msg = "شما از ربات آنبلاک شدید ."
 
     if reason is not None:
         banned_msg += f"\n**Reason:** __{reason}__"
