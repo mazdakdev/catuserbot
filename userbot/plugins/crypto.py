@@ -25,7 +25,7 @@ async def fiat(event):
     for fiat in res:
         name = fiat["name"]
         price = fiat["price"]
-        percent = fiat["percents"]
+        percent = fiat["percent"]
 
         if fiat["change"] == "+":
             changes = "➕"
@@ -63,7 +63,7 @@ async def gold(event):
     for gold in res:
         name = gold["name"]
         price = gold["price"]
-        percent = gold["percents"]
+        percent = gold["percent"]
 
         if gold["change"] == "+":
             changes = "➕"
@@ -84,40 +84,6 @@ async def gold(event):
         await edit_or_reply(event, caption)
 
 
-@catub.cat_cmd(
-    pattern="crypto$",
-    command=("crypto", plugin_category),
-    info={
-        "header": "fetch cryptos price",
-        "description": "fetch cryptos price",
-        "usage": "{tr}crypto",
-        "examples": "{tr}crypto",
-    },
-)
-async def gold(event):
-    res = requests.get("http://api.codebazan.ir/arz/?type=tala")
-    res = res.json()
-
-    for gold in res:
-
-        if fiat["change"] == "+":
-            changes = "➕"
-        changes = "➖"
-
-        caption = (
-            f'نام : {fiat["name"]} '
-            + "\n"
-            + f'قیمت : {fiat["price"]} ریال'
-            + "\n \n"
-            + "------------------------------"
-            + "\n"
-            + f"تغییرات : {changes}"
-            + "\n"
-            + f'درصد : {fiat["percent"]} %'
-        )
-
-        await edit_or_reply(event, caption)
-
 
 @catub.cat_cmd(
     pattern="crypto ([\s\S]*)",
@@ -125,15 +91,15 @@ async def gold(event):
     info={
         "header": "A command for fetching crypto's price",
         "description": "A command for fetching crypto's price",
-        "usage": "{tr}crypto <id>;<id>;<id>",
-        "examples": "{tr}crypto BTC;ETH;TRX",
+        "usage": "{tr}crypto <id>,<id>,<id>",
+        "examples": "{tr}crypto BTC,ETH,TRX",
     },
 )
 async def crypto(event):
     await reply_id(event)
     input_str = event.pattern_match.group(1)
-    if ";" in input_str:
-        ids = input_str.split(";").replace(",")
+    if "," in input_str:
+        ids = str(input_str).replace(",")
     else:
         await edit_or_reply(event, "هیچی ندادی که برادر")
 
