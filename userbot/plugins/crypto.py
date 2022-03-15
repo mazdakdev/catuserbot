@@ -1,9 +1,12 @@
-from userbot import catub
-from ..core.managers import edit_or_reply
 import requests
+
+from userbot import catub
+
+from ..core.managers import edit_or_reply
 from ..helpers.utils import reply_id
 
 plugin_category = "utils"
+
 
 @catub.cat_cmd(
     pattern="fiat$",
@@ -18,7 +21,7 @@ plugin_category = "utils"
 async def fiat(event):
     res = requests.get("http://api.codebazan.ir/arz/?type=arz")
     res = res.json()
-    
+
     for fiat in res:
         name = fiat["name"]
         price = fiat["price"]
@@ -29,18 +32,18 @@ async def fiat(event):
         changes = "➖"
 
         caption = (
-            f'نام : {name} '
+            f"نام : {name} "
             + "\n"
-            + f'قیمت : {price} ریال'
+            + f"قیمت : {price} ریال"
             + "\n \n"
             + "------------------------------"
             + "\n"
             + f"تغییرات : {changes}"
             + "\n"
-            + f'درصد : {percent} %'
+            + f"درصد : {percent} %"
         )
 
-        await edit_or_reply(event , caption)
+        await edit_or_reply(event, caption)
 
 
 @catub.cat_cmd(
@@ -56,7 +59,7 @@ async def fiat(event):
 async def gold(event):
     res = requests.get("http://api.codebazan.ir/arz/?type=tala")
     res = res.json()
-    
+
     for gold in res:
         name = gold["name"]
         price = gold["price"]
@@ -67,18 +70,19 @@ async def gold(event):
         changes = "➖"
 
         caption = (
-            f'نام : {name} '
+            f"نام : {name} "
             + "\n"
-            + f'قیمت : {price} ریال'
+            + f"قیمت : {price} ریال"
             + "\n \n"
             + "------------------------------"
             + "\n"
             + f"تغییرات : {changes}"
             + "\n"
-            + f'درصد : {percent} %'
+            + f"درصد : {percent} %"
         )
 
-        await edit_or_reply(event , caption)
+        await edit_or_reply(event, caption)
+
 
 @catub.cat_cmd(
     pattern="crypto$",
@@ -93,7 +97,7 @@ async def gold(event):
 async def gold(event):
     res = requests.get("http://api.codebazan.ir/arz/?type=tala")
     res = res.json()
-    
+
     for gold in res:
 
         if fiat["change"] == "+":
@@ -112,7 +116,8 @@ async def gold(event):
             + f'درصد : {fiat["percent"]} %'
         )
 
-        await edit_or_reply(event , caption)
+        await edit_or_reply(event, caption)
+
 
 @catub.cat_cmd(
     pattern="crypto ([\s\S]*)",
@@ -125,10 +130,10 @@ async def gold(event):
     },
 )
 async def crypto(event):
-    reply_to_id = await reply_id(event)
+    await reply_id(event)
     input_str = event.pattern_match.group(1)
     if ";" in input_str:
-        ids  = input_str.split(";").replace(",")
+        ids = input_str.split(";").replace(",")
     else:
         await edit_or_reply(event, "هیچی ندادی که برادر")
 
@@ -139,12 +144,6 @@ async def crypto(event):
         name = crypto["name"]
         price = crypto["price"]
 
-        caption = (
-            f'Name : {name}'
-            + "\n"
-            + f'Price : {price}$'
-        )
+        caption = f"Name : {name}" + "\n" + f"Price : {price}$"
 
-        await edit_or_reply(event , caption)
-
-        
+        await edit_or_reply(event, caption)

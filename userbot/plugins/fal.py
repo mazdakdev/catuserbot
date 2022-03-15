@@ -1,7 +1,9 @@
-from userbot import catub
 import random
 
+from userbot import catub
+
 plugin_category = "fun"
+
 
 @catub.cat_cmd(
     pattern="fal$",
@@ -14,11 +16,7 @@ plugin_category = "fun"
     },
 )
 async def fal(event):
-    fal_number = random.randrange(1,150)
+    fal_number = random.randrange(1, 150)
     url = f"http://api.codebazan.ir/fal/hafez/{fal_number}.gif"
 
-    await event.client.send_file(
-        event.chat_id,
-        url,
-        caption="بیا اینم فالت داداش 🔥"
-    )
+    await event.client.send_file(event.chat_id, url, caption="بیا اینم فالت داداش 🔥")
