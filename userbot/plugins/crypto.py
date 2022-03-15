@@ -84,6 +84,7 @@ async def gold(event):
         await event.client.send_message(event.chat_id, caption)
 
 
+
 @catub.cat_cmd(
     pattern="crypto ([\s\S]*)",
     command=("crypto", plugin_category),
