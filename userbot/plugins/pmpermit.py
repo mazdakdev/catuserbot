@@ -328,7 +328,7 @@ async def do_pm_chat_action(event, chat):
     except AttributeError:
         PMMESSAGE_CACHE = {}
     if str(chat.id) not in PM_WARNS:
-        text = " مزدک فعلا سرش شلوغ هستش قلا ازت خواستم که یک مقدار صبر کنی"
+        text = " مزدک فعلا سرش شلوغ هستش فعلا ازت خواستم که یک مقدار صبر کنی"
         await event.reply(text)
         PM_WARNS[str(chat.id)] = 1
         sql.del_collection("pmwarns")
