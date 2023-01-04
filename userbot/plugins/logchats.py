@@ -86,7 +86,7 @@ async def log_tagged_messages(event):
         full = await event.client.get_entity(event.message.from_id)
     except Exception as e:
         LOGS.info(str(e))
-    messaget = media_type(event)
+    messaget = await media_type(event)
     resalt = f"#TAGS \n<b>Group : </b><code>{hmm.title}</code>"
     if full is not None:
         resalt += (
@@ -206,10 +206,7 @@ async def set_pmlog(event):
         h_type = False
     elif input_str == "on":
         h_type = True
-    if gvarstatus("PMLOG") and gvarstatus("PMLOG") == "false":
-        PMLOG = False
-    else:
-        PMLOG = True
+    PMLOG = not gvarstatus("PMLOG") or gvarstatus("PMLOG") != "false"
     if PMLOG:
         if h_type:
             await event.edit("`Pm logging is already enabled`")
@@ -248,10 +245,7 @@ async def set_grplog(event):
         h_type = False
     elif input_str == "on":
         h_type = True
-    if gvarstatus("GRPLOG") and gvarstatus("GRPLOG") == "false":
-        GRPLOG = False
-    else:
-        GRPLOG = True
+    GRPLOG = not gvarstatus("GRPLOG") or gvarstatus("GRPLOG") != "false"
     if GRPLOG:
         if h_type:
             await event.edit("`Group logging is already enabled`")

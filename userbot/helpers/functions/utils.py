@@ -1,3 +1,4 @@
+import re
 import time
 from datetime import datetime
 
@@ -37,7 +38,7 @@ async def get_readable_time(seconds: int) -> str:
     for x in range(hmm):
         time_list[x] = str(time_list[x]) + time_suffix_list[x]
     if len(time_list) == 4:
-        up_time += time_list.pop() + ", "
+        up_time += f"{time_list.pop()}, "
     time_list.reverse()
     up_time += ":".join(time_list)
     return up_time
@@ -97,5 +98,10 @@ def Build_Poll(options):
 
 
 def deEmojify(inputString: str) -> str:
+    """Remove emojis and other non-safe characters from string"""
+    return re.sub("[^a-zA-Z0-9 \\`~!@#$%^&*(){}[\]_+=.:;\n'\",><?/-]", "", inputString)
+
+
+def soft_deEmojify(inputString: str) -> str:
     """Remove emojis and other non-safe characters from string"""
     return get_emoji_regexp().sub("", inputString)

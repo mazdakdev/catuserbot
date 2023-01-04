@@ -49,7 +49,11 @@ def humanbytes(size: int) -> str:
     while size > power:
         size /= power
         raised_to_pow += 1
-    return str(round(size, 2)) + " " + dict_power_n[raised_to_pow] + "B"
+    return f"{str(round(size, 2))} {dict_power_n[raised_to_pow]}B"
+
+
+def scheck(inp):
+    return "" if inp == 1 else "s"
 
 
 def time_formatter(seconds: int) -> str:
@@ -58,23 +62,31 @@ def time_formatter(seconds: int) -> str:
     days, hours = divmod(hours, 24)
     seconds = round(seconds, 2)
     tmp = (
-        ((str(days) + " day(s), ") if days else "")
-        + ((str(hours) + " hour(s), ") if hours else "")
-        + ((str(minutes) + " minute(s), ") if minutes else "")
-        + ((str(seconds) + " second(s), ") if seconds else "")
+        (f"{str(days)} day{scheck(days)}, " if days else "")
+        + (f"{str(hours)} hour{scheck(hours)}, " if hours else "")
+        + (f"{str(minutes)} minute{scheck(minutes)}, " if minutes else "")
+        + (f"{str(seconds)} second{scheck(seconds)}, " if seconds else "")
     )
     return tmp[:-2]
+
+
+def check(inp):
+    if len(str(inp)) == 1:
+        inp = f"0{inp}"
+        return inp
+    return inp
 
 
 def readable_time(seconds: int) -> str:
     minutes, seconds = divmod(seconds, 60)
     hours, minutes = divmod(minutes, 60)
     days, hours = divmod(hours, 24)
+    print(type(minutes))
     return (
-        ((str(int(days)) + " day(s), ") if days else "")
-        + ((str(int(hours)) + ":") if hours else "00:")
-        + ((str(int(minutes)) + ":") if minutes else "00:")
-        + (str(int(seconds)) if seconds else "00")
+        (f"{int(days)} day(s), " if days else "")
+        + (f"{check(hours)}:" if hours else "00:")
+        + (f"{check(minutes)}:" if minutes else "00:")
+        + str((check(seconds)) if seconds else "00")
     )
 
 
@@ -104,7 +116,7 @@ async def progress(
     file_name=None,
     is_cancelled=False,
     delay=5,
-):  # sourcery no-metrics
+):  # sourcery no-metrics  # sourcery skip: low-code-quality
     if is_cancelled is True:
         raise CancelProcess
     task_id = f"{gdrive.chat_id}.{gdrive.id}"
@@ -140,14 +152,15 @@ async def progress(
         progress_str = "`{0}` | `[{1}{2}] {3}%`".format(
             status,
             "".join(
-                Config.FINISHED_PROGRESS_STR for i in range(math.floor(percentage / 5))
+                Config.FINISHED_PROGRESS_STR for _ in range(math.floor(percentage / 5))
             ),
             "".join(
                 Config.UNFINISHED_PROGRESS_STR
-                for i in range(20 - math.floor(percentage / 5))
+                for _ in range(20 - math.floor(percentage / 5))
             ),
             round(percentage, 2),
         )
+
         tmp = (
             f"{progress_str}\n"
             f"`{humanbytes(current)} of {humanbytes(total)}"

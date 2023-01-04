@@ -12,6 +12,7 @@ from barcode.writer import ImageWriter
 from bs4 import BeautifulSoup
 from PIL import Image, ImageColor
 from telethon.errors.rpcerrorlist import YouBlockedUserError
+from telethon.tl.functions.contacts import UnblockRequest as unblock
 
 from userbot import catub
 
@@ -19,7 +20,8 @@ from ..Config import Config
 from ..core.logger import logging
 from ..core.managers import edit_delete, edit_or_reply
 from ..helpers import AioHttp
-from ..helpers.utils import _catutils, _format, reply_id
+from ..helpers.functions import delete_conv
+from ..helpers.utils import _catutils, reply_id
 
 plugin_category = "tools"
 
@@ -73,7 +75,7 @@ async def currency(event):
                 "__You have used wrong currency codes or Api can't fetch details or try by restarting bot it will work if everything is fine.__",
                 time=10,
             )
-        output = float(value) * float(result)
+        output = value * float(result)
         output = round(output, 4)
         await edit_or_reply(
             event,
@@ -95,7 +97,7 @@ async def currency(event):
         "usage": ["{tr}scan", "{tr}scan -i"],
     },
 )
-async def _(event):
+async def scan(event):
     input_str = event.pattern_match.group(1)
     if not event.reply_to_msg_id:
         return await edit_or_reply(event, "```Reply to any user message.```")
@@ -106,28 +108,34 @@ async def _(event):
     catevent = await edit_or_reply(event, " `Sliding my tip, of fingers over it`")
     async with event.client.conversation(chat) as conv:
         try:
-            await conv.send_message("/start")
-            await conv.get_response()
-            await event.client.forward_messages(chat, reply_message)
-            response1 = await conv.get_response()
-            if response1.text:
-                await event.client.send_read_acknowledge(conv.chat_id)
-                return await catevent.edit(response1.text, parse_mode=_format.parse_pre)
-            await conv.get_response()
-            await event.client.send_read_acknowledge(conv.chat_id)
-            response3 = await conv.get_response()
-            response4 = await conv.get_response()
-            await event.client.send_read_acknowledge(conv.chat_id)
+            flag = await conv.send_message("/start")
         except YouBlockedUserError:
-            return await catevent.edit(
-                "`You blocked `@VS_Robot` Unblock it and give a try`"
+            await edit_or_reply(
+                catevent, "**Error:** Trying to unblock & retry, wait a sec..."
             )
-        if not input_str:
-            return await edit_or_reply(catevent, response4.text)
-        await catevent.delete()
-        await event.client.send_file(
-            event.chat_id, response3.media, reply_to=(await reply_id(event))
-        )
+            await catub(unblock("VS_Robot"))
+            flag = await conv.send_message("/start")
+        await conv.get_response()
+        await conv.send_message(reply_message)
+        response1 = await conv.get_response()
+        if response1.text:
+            await event.client.send_read_acknowledge(conv.chat_id)
+            sec = "".join([num for num in response1.text if num.isdigit()])
+            await edit_delete(catevent, f"**Please wait for {sec}s before retry**", 15)
+        else:
+            await conv.get_response()
+            await event.client.send_read_acknowledge(conv.chat_id)
+            response2 = await conv.get_response()
+            response3 = await conv.get_response()
+            await event.client.send_read_acknowledge(conv.chat_id)
+            if not input_str:
+                await edit_or_reply(catevent, response3.text[30:])
+            else:
+                await catevent.delete()
+                await event.client.send_file(
+                    event.chat_id, response2.media, reply_to=(await reply_id(event))
+                )
+        await delete_conv(event, chat, flag)
 
 
 @catub.cat_cmd(
@@ -209,7 +217,7 @@ async def _(event):
         return await catevent.edit(str(e))
     end = datetime.now()
     ms = (end - start).seconds
-    await edit_delete(catevent, "Created BarCode in {} seconds".format(ms))
+    await edit_delete(catevent, f"Created BarCode in {ms} seconds")
 
 
 @catub.cat_cmd(
@@ -379,11 +387,10 @@ async def spy(event):
 async def _(event):
     "to get details of the relevant bank or branch."
     input_str = event.pattern_match.group(1)
-    url = "https://ifsc.razorpay.com/{}".format(input_str)
+    url = f"https://ifsc.razorpay.com/{input_str}"
     r = requests.get(url)
     if r.status_code != 200:
-        return await edit_or_reply(event, "`{}`: {}".format(input_str, r.text))
-
+        return await edit_or_reply(event, f"`{input_str}`: {r.text}")
     b = r.json()
     a = json.dumps(b, sort_keys=True, indent=4)
     # https://stackoverflow.com/a/9105132/4723940
@@ -451,15 +458,15 @@ async def _(event):
     if xkcd_id is None:
         xkcd_url = "https://xkcd.com/info.0.json"
     else:
-        xkcd_url = "https://xkcd.com/{}/info.0.json".format(xkcd_id)
+        xkcd_url = f"https://xkcd.com/{xkcd_id}/info.0.json"
     r = requests.get(xkcd_url)
     if not r.ok:
-        return await catevent.edit("xkcd n.{} not found!".format(xkcd_id))
+        return await catevent.edit(f"xkcd n.{xkcd_id} not found!")
     data = r.json()
     year = data.get("year")
     month = data["month"].zfill(2)
     day = data["day"].zfill(2)
-    xkcd_link = "https://xkcd.com/{}".format(data.get("num"))
+    xkcd_link = f'https://xkcd.com/{data.get("num")}'
     safe_title = data.get("safe_title")
     data.get("transcript")
     alt = data.get("alt")

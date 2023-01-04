@@ -21,7 +21,7 @@ TYPES = [
     "Sticker",
     "Gif",
     "Voice",
-    "Round Video",
+    "Round",
 ]
 
 
@@ -39,11 +39,10 @@ def weird_division(n, d):
         "examples": "{tr}chatfs @catuserbot_support",
     },
 )
-async def _(event):  # sourcery no-metrics
+async def _(event):  # sourcery no-metrics  # sourcery skip: low-code-quality
     "Shows you the complete media/file summary of the that group"
     entity = event.chat_id
-    input_str = event.pattern_match.group(1)
-    if input_str:
+    if input_str := event.pattern_match.group(1):
         try:
             entity = int(input_str)
         except ValueError:
@@ -82,7 +81,7 @@ async def _(event):  # sourcery no-metrics
     }
     async for message in event.client.iter_messages(entity=entity, limit=None):
         msg_count += 1
-        media = media_type(message)
+        media = await media_type(message)
         if media is not None:
             media_dict[media]["file_size"] += message.file.size
             media_dict[media]["count"] += 1
@@ -110,15 +109,15 @@ async def _(event):  # sourcery no-metrics
             largest += f"  •  <b><a href='{media_dict[mediax]['max_file_link']}'>{mediax}</a>  : </b><code>{humanbytes(media_dict[mediax]['max_size'])}</code>\n"
     endtime = int(time.monotonic())
     if endtime - starttime >= 120:
-        runtime = str(round(((endtime - starttime) / 60), 2)) + " minutes"
+        runtime = f"{str(round(((endtime - starttime) / 60), 2))} minutes"
     else:
-        runtime = str(endtime - starttime) + " seconds"
+        runtime = f"{str(endtime - starttime)} seconds"
     avghubytes = humanbytes(weird_division(totalsize, totalcount))
     avgruntime = (
         str(round((weird_division((endtime - starttime), totalcount)) * 1000, 2))
         + " ms"
     )
-    totalstring = f"<code><b>Total files : </b>       | {totalcount}\\\x1f                  \nTotal file size :    | {humanbytes(totalsize)}\\\x1f                  \nAvg. file size :     | {avghubytes}\\\x1f                  \n</code>"
+    totalstring = f"<code><b>Total files : </b>       | {totalcount}\nTotal file size :    | {humanbytes(totalsize)}\nAvg. file size :     | {avghubytes}\n</code>"
 
     runtimestring = f"<code>Runtime :            | {runtime}\
                     \nRuntime per file :   | {avgruntime}\
@@ -143,7 +142,7 @@ async def _(event):  # sourcery no-metrics
         "examples": "{tr}userfs @MissRose_bot",
     },
 )
-async def _(event):  # sourcery no-metrics
+async def _(event):  # sourcery no-metrics  # sourcery skip: low-code-quality
     "Shows you the complete media/file summary of the that user in that group."
     reply = await event.get_reply_message()
     input_str = event.pattern_match.group(1)
@@ -209,7 +208,7 @@ async def _(event):  # sourcery no-metrics
         entity=entity, limit=None, from_user=userentity
     ):
         msg_count += 1
-        media = media_type(message)
+        media = await media_type(message)
         if media is not None:
             media_dict[media]["file_size"] += message.file.size
             media_dict[media]["count"] += 1
@@ -237,15 +236,15 @@ async def _(event):  # sourcery no-metrics
             largest += f"  •  <b><a href='{media_dict[mediax]['max_file_link']}'>{mediax}</a>  : </b><code>{humanbytes(media_dict[mediax]['max_size'])}</code>\n"
     endtime = int(time.monotonic())
     if endtime - starttime >= 120:
-        runtime = str(round(((endtime - starttime) / 60), 2)) + " minutes"
+        runtime = f"{str(round(((endtime - starttime) / 60), 2))} minutes"
     else:
-        runtime = str(endtime - starttime) + " seconds"
+        runtime = f"{str(endtime - starttime)} seconds"
     avghubytes = humanbytes(weird_division(totalsize, totalcount))
     avgruntime = (
         str(round((weird_division((endtime - starttime), totalcount)) * 1000, 2))
         + " ms"
     )
-    totalstring = f"<code><b>Total files : </b>       | {totalcount}\\\x1f                  \nTotal file size :    | {humanbytes(totalsize)}\\\x1f                  \nAvg. file size :     | {avghubytes}\\\x1f                  \n</code>"
+    totalstring = f"<code><b>Total files : </b>       | {totalcount}\nTotal file size :    | {humanbytes(totalsize)}\nAvg. file size :     | {avghubytes}\n</code>"
 
     runtimestring = f"<code>Runtime :            | {runtime}\
                     \nRuntime per file :   | {avgruntime}\

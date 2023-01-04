@@ -1,9 +1,9 @@
 import asyncio
+import contextlib
 from datetime import datetime
 
 from telethon.errors import BadRequestError
 from telethon.tl.functions.channels import EditBannedRequest
-from telethon.tl.functions.users import GetFullUserRequest
 from telethon.tl.types import ChatBannedRights
 from telethon.utils import get_display_name
 
@@ -61,7 +61,7 @@ async def catgban(event):  # sourcery no-metrics
         return await edit_delete(cate, "`why would I ban myself`")
     if gban_sql.is_gbanned(user.id):
         await cate.edit(
-            f"`the `[user](tg://user?id={user.id})` is already in gbanned list any way checking again`"
+            f"``[{user.first_name}](tg://user?id={user.id})` is already in gbanned list any way checking again`"
         )
     else:
         gban_sql.catgban(user.id, reason)
@@ -71,7 +71,7 @@ async def catgban(event):  # sourcery no-metrics
     if sandy == 0:
         return await edit_delete(cate, "`you are not admin of atleast one group` ")
     await cate.edit(
-        f"`initiating gban of the `[user](tg://user?id={user.id}) `in {len(san)} groups`"
+        f"`initiating gban of `[{user.first_name}](tg://user?id={user.id}) `in {len(san)} groups`"
     )
     for i in range(sandy):
         try:
@@ -117,12 +117,10 @@ async def catgban(event):  # sourcery no-metrics
                 \n__Banned in {count} groups__\
                 \n**Time taken : **`{cattaken} seconds`",
             )
-        try:
+        with contextlib.suppress(BadRequestError):
             if reply:
                 await reply.forward_to(BOTLOG_CHATID)
                 await reply.delete()
-        except BadRequestError:
-            pass
 
 
 @catub.cat_cmd(
@@ -145,7 +143,8 @@ async def catgban(event):
         gban_sql.catungban(user.id)
     else:
         return await edit_delete(
-            cate, f"the [user](tg://user?id={user.id}) `is not in your gbanned list`"
+            cate,
+            f"[{user.first_name}](tg://user?id={user.id}) `is not in your gbanned list`",
         )
     san = await admin_groups(event.client)
     count = 0
@@ -153,7 +152,7 @@ async def catgban(event):
     if sandy == 0:
         return await edit_delete(cate, "`you are not even admin of atleast one group `")
     await cate.edit(
-        f"initiating ungban of the [user](tg://user?id={user.id}) in `{len(san)}` groups"
+        f"initiating ungban of [{user.first_name}](tg://user?id={user.id}) in `{len(san)}` groups"
     )
     for i in range(sandy):
         try:
@@ -250,7 +249,7 @@ async def startgmute(event):
             return await edit_or_reply(event, "`Sorry, I can't gmute myself`")
         userid = user.id
     try:
-        user = (await event.client(GetFullUserRequest(userid))).user
+        user = await event.client.get_entity(userid)
     except Exception:
         return await edit_or_reply(event, "`Sorry. I am unable to fetch the user`")
     if is_muted(userid, "gmute"):
@@ -316,7 +315,7 @@ async def endgmute(event):
             return await edit_or_reply(event, "`Sorry, I can't gmute myself`")
         userid = user.id
     try:
-        user = (await event.client(GetFullUserRequest(userid))).user
+        user = await event.client.get_entity(userid)
     except Exception:
         return await edit_or_reply(event, "`Sorry. I am unable to fetch the user`")
     if not is_muted(userid, "gmute"):

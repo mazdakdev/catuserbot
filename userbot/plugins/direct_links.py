@@ -11,7 +11,7 @@ from humanize import naturalsize
 from userbot import catub
 
 from ..core.logger import logging
-from ..core.managers import edit_or_reply
+from ..core.managers import edit_delete, edit_or_reply
 
 LOGS = logging.getLogger(__name__)
 plugin_category = "misc"
@@ -139,10 +139,12 @@ def zippy_share(url: str) -> str:
         if "getElementById('dlbutton')" in script.text:
             url_raw = re.search(
                 r"= (?P<url>\".+\" \+ (?P<math>\(.+\)) .+);", script.text
-            ).group("url")
-            math = re.search(
-                r"= (?P<url>\".+\" \+ (?P<math>\(.+\)) .+);", script.text
-            ).group("math")
+            )["url"]
+
+            math = re.search(r"= (?P<url>\".+\" \+ (?P<math>\(.+\)) .+);", script.text)[
+                "math"
+            ]
+
             dl_url = url_raw.replace(math, '"' + str(eval(math)) + '"')
             break
     dl_url = base_url + eval(dl_url)
@@ -362,3 +364,34 @@ def useragent():
     ).findAll("td", {"class": "useragent"})
     user_agent = choice(useragents)
     return user_agent.text
+
+
+def anonfiles(url: str) -> str:
+    reply = ""
+    html_s = requests.get(url).content
+    soup = BeautifulSoup(html_s, "html.parser")
+    _url = soup.find("a", attrs={"class": "btn-primary"})["href"]
+    name = _url.rsplit("/", 1)[1]
+    dl_url = _url.replace(" ", "%20")
+    reply += f"[{name}]({dl_url})\n"
+    return reply
+
+
+"""
+def onedrive(link: str) -> str:
+    link_without_query = urlparse(link)._replace(query=None).geturl()
+    direct_link_encoded = str(
+        standard_b64encode(bytes(link_without_query, "utf-8")), "utf-8"
+    )
+    direct_link1 = (
+        f"https://api.onedrive.com/v1.0/shares/u!{direct_link_encoded}/root/content"
+    )
+    resp = requests.head(direct_link1)
+    if resp.status_code != 302:
+        return "`Error: Unauthorized link, the link may be private`"
+    dl_link = resp.next.url
+    file_name = dl_link.rsplit("/", 1)[1]
+    resp2 = requests.head(dl_link)
+    dl_size = humanbytes(int(resp2.headers["Content-Length"]))
+    return f"[{file_name} ({dl_size})]({dl_link})"
+"""

@@ -12,7 +12,7 @@ from ..core.managers import edit_delete, edit_or_reply
 from ..helpers.utils import _catutils, _format
 from . import humanbytes
 
-plugin_category = "utils"
+plugin_category = "tools"
 
 
 @catub.cat_cmd(
@@ -25,7 +25,7 @@ plugin_category = "utils"
         "examples": "{tr}ls userbot",
     },
 )
-async def lst(event):  # sourcery no-metrics
+async def ls(event):  # sourcery no-metrics  # sourcery skip: low-code-quality
     "To list all files and folders."
     cat = "".join(event.text.split(maxsplit=1)[1:])
     path = cat or os.getcwd()
@@ -49,24 +49,24 @@ async def lst(event):  # sourcery no-metrics
             if not os.path.isdir(catpath):
                 size = os.stat(catpath).st_size
                 if str(contents).endswith((".mp3", ".flac", ".wav", ".m4a")):
-                    files += "🎵" + f"`{contents}`\n"
+                    files += f"🎵`{contents}`\n"
                 if str(contents).endswith((".opus")):
-                    files += "🎙" + f"`{contents}`\n"
+                    files += f"🎙`{contents}`\n"
                 elif str(contents).endswith(
                     (".mkv", ".mp4", ".webm", ".avi", ".mov", ".flv")
                 ):
-                    files += "🎞" + f"`{contents}`\n"
+                    files += f"🎞`{contents}`\n"
                 elif str(contents).endswith((".zip", ".tar", ".tar.gz", ".rar")):
-                    files += "🗜" + f"`{contents}`\n"
+                    files += f"🗜`{contents}`\n"
                 elif str(contents).endswith(
                     (".jpg", ".jpeg", ".png", ".gif", ".bmp", ".ico")
                 ):
-                    files += "🖼" + f"`{contents}`\n"
+                    files += f"🖼`{contents}`\n"
                 else:
-                    files += "📄" + f"`{contents}`\n"
+                    files += f"📄`{contents}`\n"
             else:
                 folders += f"📁`{contents}`\n"
-        msg = msg + folders + files if files or folders else msg + "__empty path__"
+        msg = msg + folders + files if files or folders else f"{msg}__empty path__"
     else:
         size = os.stat(path).st_size
         msg = "The details of given file :\n"
@@ -106,7 +106,7 @@ async def lst(event):  # sourcery no-metrics
 
 
 @catub.cat_cmd(
-    pattern="rem ([\s\S]*)",
+    pattern="rem(?:\s|$)([\s\S]*)",
     command=("rem", plugin_category),
     info={
         "header": "To delete a file or folder from the server",
@@ -114,7 +114,7 @@ async def lst(event):  # sourcery no-metrics
         "examples": "{tr}rem Dockerfile",
     },
 )
-async def lst(event):
+async def rem(event):
     "To delete a file or folder."
     cat = event.pattern_match.group(1)
     if cat:
@@ -128,7 +128,7 @@ async def lst(event):
             f"there is no such directory or file with the name `{cat}` check again",
         )
         return
-    catcmd = f"rm -rf {path}"
+    catcmd = f"rm -rf '{path}'"
     if os.path.isdir(path):
         await _catutils.runcmd(catcmd)
         await edit_or_reply(event, f"successfully removed `{path}` directory")
@@ -146,7 +146,7 @@ async def lst(event):
         "examples": "{tr}mkdir cat",
     },
 )
-async def _(event):
+async def make_dir(event):
     "To create a new directory."
     pwd = os.getcwd()
     input_str = event.pattern_match.group(1)
@@ -183,7 +183,7 @@ async def _(event):
         "examples": "{tr}cpto sample_config.py ; downloads",
     },
 )
-async def _(event):
+async def copy(event):
     "To copy a file from one directory to other directory"
     pwd = os.getcwd()
     input_str = event.pattern_match.group(1)
@@ -206,7 +206,7 @@ async def _(event):
     if not os.path.exists(original):
         await edit_delete(
             event,
-            f"there is no such directory or file with the name `{cat}` check again",
+            f"there is no such directory or file with the name `{original}` check again",
         )
         return
     mone = await edit_or_reply(
@@ -229,7 +229,7 @@ async def _(event):
         "examples": "{tr}mvto stringsession.py ; downloads",
     },
 )
-async def _(event):
+async def move(event):
     "To move a file from one directory to other directory"
     pwd = os.getcwd()
     input_str = event.pattern_match.group(1)

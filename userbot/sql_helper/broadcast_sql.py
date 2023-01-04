@@ -18,7 +18,7 @@ class CatBroadcast(BASE):
         return "<Cat Broadcast channels '%s' for %s>" % (self.group_id, self.keywoard)
 
     def __eq__(self, other):
-        return bool(
+        return (
             isinstance(other, CatBroadcast)
             and self.keywoard == other.keywoard
             and self.group_id == other.group_id
@@ -49,8 +49,9 @@ def add_to_broadcastlist(keywoard, group_id):
 
 def rm_from_broadcastlist(keywoard, group_id):
     with CATBROADCAST_INSERTION_LOCK:
-        broadcast_group = SESSION.query(CatBroadcast).get((keywoard, str(group_id)))
-        if broadcast_group:
+        if broadcast_group := SESSION.query(CatBroadcast).get(
+            (keywoard, str(group_id))
+        ):
             if str(group_id) in BROADCAST_SQL_.BROADCAST_CHANNELS.get(keywoard, set()):
                 BROADCAST_SQL_.BROADCAST_CHANNELS.get(keywoard, set()).remove(
                     str(group_id)

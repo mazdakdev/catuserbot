@@ -37,10 +37,10 @@ def admin_cmd(pattern=None, command=None, **args):  # sourcery no-metrics
                 CMD_LIST.update({file_test: [cmd]})
         else:
             if len(Config.COMMAND_HAND_LER) == 2:
-                catreg = "^" + Config.COMMAND_HAND_LER
+                catreg = f"^{Config.COMMAND_HAND_LER}"
                 reg = Config.COMMAND_HAND_LER[1]
             elif len(Config.COMMAND_HAND_LER) == 1:
-                catreg = "^\\" + Config.COMMAND_HAND_LER
+                catreg = f"^\\{Config.COMMAND_HAND_LER}"
                 reg = Config.COMMAND_HAND_LER
             args["pattern"] = re.compile(catreg + pattern)
             if command is not None:
@@ -69,6 +69,7 @@ def admin_cmd(pattern=None, command=None, **args):  # sourcery no-metrics
 
 
 def sudo_cmd(pattern=None, command=None, **args):  # sourcery no-metrics
+    # sourcery skip: low-code-quality
     args["func"] = lambda e: e.via_bot_id is None
     stack = inspect.stack()
     previous_stack_frame = stack[1]
@@ -89,10 +90,10 @@ def sudo_cmd(pattern=None, command=None, **args):  # sourcery no-metrics
                 SUDO_LIST.update({file_test: [cmd]})
         else:
             if len(Config.SUDO_COMMAND_HAND_LER) == 2:
-                catreg = "^" + Config.SUDO_COMMAND_HAND_LER
+                catreg = f"^{Config.SUDO_COMMAND_HAND_LER}"
                 reg = Config.SUDO_COMMAND_HAND_LER[1]
             elif len(Config.SUDO_COMMAND_HAND_LER) == 1:
-                catreg = "^\\" + Config.SUDO_COMMAND_HAND_LER
+                catreg = f"^\\{Config.SUDO_COMMAND_HAND_LER}"
                 reg = Config.COMMAND_HAND_LER
             args["pattern"] = re.compile(catreg + pattern)
             if command is not None:
@@ -157,9 +158,8 @@ def errors_handler(func):
             result = output[0] + output[1]
             ftext += result
             pastelink = await paste_message(ftext)
-            text = "**CatUserbot Error report**\n\n"
             link = "[here](https://t.me/catuserbot_support)"
-            text += "If you wanna you can report it"
+            text = "**CatUserbot Error report**\n\n" + "If you wanna you can report it"
             text += f"- just forward this message {link}.\n"
             text += "Nothing is logged except the fact of error and date\n\n"
             text += f"**Error report : ** [{new['error']}]({pastelink})"

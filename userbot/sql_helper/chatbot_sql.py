@@ -23,7 +23,7 @@ class ChatBot(BASE):
         self.chat_type = chat_type
 
     def __eq__(self, other):
-        return bool(
+        return (
             isinstance(other, ChatBot)
             and self.chat_id == other.chat_id
             and self.user_id == other.user_id
@@ -89,14 +89,12 @@ def remove_ai(chat_id, user_id):
 
 
 def remove_users(chat_id):
-    saved_filter = SESSION.query(ChatBot).filter(ChatBot.chat_id == str(chat_id))
-    if saved_filter:
+    if saved_filter := SESSION.query(ChatBot).filter(ChatBot.chat_id == str(chat_id)):
         saved_filter.delete()
         SESSION.commit()
 
 
 def remove_all_users():
-    saved_filter = SESSION.query(ChatBot)
-    if saved_filter:
+    if saved_filter := SESSION.query(ChatBot):
         saved_filter.delete()
         SESSION.commit()

@@ -23,7 +23,7 @@ class Echos(BASE):
         self.chat_type = chat_type
 
     def __eq__(self, other):
-        return bool(
+        return (
             isinstance(other, Echos)
             and self.chat_id == other.chat_id
             and self.user_id == other.user_id
@@ -89,14 +89,12 @@ def remove_echo(chat_id, user_id):
 
 
 def remove_echos(chat_id):
-    saved_filter = SESSION.query(Echos).filter(Echos.chat_id == str(chat_id))
-    if saved_filter:
+    if saved_filter := SESSION.query(Echos).filter(Echos.chat_id == str(chat_id)):
         saved_filter.delete()
         SESSION.commit()
 
 
 def remove_all_echos():
-    saved_filter = SESSION.query(Echos)
-    if saved_filter:
+    if saved_filter := SESSION.query(Echos):
         saved_filter.delete()
         SESSION.commit()

@@ -1,7 +1,8 @@
+# sourcery skip: raise-specific-error
 try:
     from . import BASE, SESSION
-except ImportError:
-    raise Exception("Hello!")
+except ImportError as e:
+    raise Exception("Hello!") from e
 
 from sqlalchemy import Column, String
 
@@ -33,7 +34,6 @@ def gmute(sender):
 
 
 def ungmute(sender):
-    rem = SESSION.query(GMute).get((str(sender)))
-    if rem:
+    if rem := SESSION.query(GMute).get((str(sender))):
         SESSION.delete(rem)
         SESSION.commit()

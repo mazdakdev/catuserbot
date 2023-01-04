@@ -16,15 +16,23 @@ from telethon import events
 from telethon.errors.rpcerrorlist import YouBlockedUserError
 from telethon.utils import get_display_name
 
-from userbot import catub
+from userbot import Convert, catub
 
+from ..core.logger import logging
 from ..core.managers import edit_delete, edit_or_reply
-from ..helpers import convert_tosticker, media_type, process
-from ..helpers.utils import _cattools, reply_id
+from ..helpers import file_check, fontTest, media_type, process, soft_deEmojify
+from ..helpers.utils import get_user_from_event, reply_id
 
-FONT_FILE_TO_USE = "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"
+LOGS = logging.getLogger(__name__)
 
 plugin_category = "fun"
+
+
+class Forward_Lock:
+    def __init__(self, name):
+        self.first_name = name
+        self.last_name = None
+        self.photo = None
 
 
 def get_warp_length(width):
@@ -44,7 +52,7 @@ def get_warp_length(width):
         "examples": ["{tr}qpic CatUserbot.", "{tr}qpic -b CatUserbot."],
     },
 )
-async def q_pic(event):  # sourcery no-metrics
+async def q_pic(event):  # sourcery no-metrics  # sourcery skip: low-code-quality
     args = event.pattern_match.group(1)
     black = re.findall(r"-b", args)
     sticker = re.findall(r"-s", args)
@@ -62,8 +70,10 @@ async def q_pic(event):  # sourcery no-metrics
         return await edit_delete(
             event, "__Provide input along with cmd or reply to text message.__"
         )
+    text = soft_deEmojify(text)
     catevent = await edit_or_reply(event, "__Making Quote pic....__")
-    mediatype = media_type(reply)
+    file_check(re=False, me=False, mo=False, it=False)
+    mediatype = await media_type(reply)
     if (
         (not reply)
         or (not mediatype)
@@ -76,7 +86,9 @@ async def q_pic(event):  # sourcery no-metrics
         user = reply.sender_id if reply else event.client.uid
         pfp = await event.client.download_profile_photo(user)
     else:
-        imag = await _cattools.media_to_pic(event, reply, noedits=True)
+        imag = await Convert.to_image(
+            event, reply, dirct="./temp", file="quotly.png", noedits=True
+        )
         if imag[1] is None:
             return await edit_delete(
                 imag[0], "__Unable to extract image from the replied message.__"
@@ -92,13 +104,14 @@ async def q_pic(event):  # sourcery no-metrics
         pfp = "profilepic.jpg"
         with open(pfp, "wb") as f:
             f.write(
-                requests.get(
-                    "https://telegra.ph/file/1fd74fa4a4dbf1655f3ec.jpg"
-                ).content
+                requests.get("https://graph.org/file/1fd74fa4a4dbf1655f3ec.jpg").content
             )
     text = "\n".join(textwrap.wrap(text, 25))
-    text = "“" + text + "„"
-    font = ImageFont.truetype(FONT_FILE_TO_USE, 50)
+    text = f"“{text}„"
+    textf = (
+        "./temp/ArialUnicodeMS.ttf" if await fontTest(text[0]) else "./temp/Quivira.otf"
+    )
+    textfont = ImageFont.truetype(textf, 50)
     img = Image.open(pfp)
     if black:
         img = img.convert("L")
@@ -109,18 +122,23 @@ async def q_pic(event):  # sourcery no-metrics
     nimg.putalpha(150)
     img.paste(nimg, (nw // 2, nh // 2), nimg)
     draw = ImageDraw.Draw(img)
-    tw, th = draw.textsize(text=text, font=font)
+    tw, th = draw.textsize(text=text, font=textfont)
     x, y = (w - tw) // 2, (h - th) // 2
-    draw.text((x, y), text=text, font=font, fill="#ffffff", align="center")
+    draw.text((x, y), text=text, font=textfont, fill="#ffffff", align="center")
     if user is not None:
-        credit = "\n".join(
-            wrap(f"by {get_display_name(user)}", int(get_warp_length(w / 2.5)))
+        usrname = get_display_name(user)
+        namef = (
+            "./temp/ArialUnicodeMS.ttf"
+            if await fontTest(usrname[0])
+            else "./temp/Quivira.otf"
         )
-        tw, th = draw.textsize(text=credit, font=font)
+        namefont = ImageFont.truetype(namef, 50)
+        credit = "\n".join(wrap(f"by {usrname}", int(get_warp_length(w / 2.5))))
+        tw, th = draw.textsize(text=credit, font=namefont)
         draw.text(
             ((w - nw + tw) // 1.6, (h - nh - th)),
             text=credit,
-            font=font,
+            font=namefont,
             fill="#ffffff",
             align="left",
         )
@@ -140,77 +158,77 @@ async def q_pic(event):  # sourcery no-metrics
 
 
 @catub.cat_cmd(
-    pattern="q(?:\s|$)([\s\S]*)",
+    pattern="(q|rq|fq|frq)(?:\s|$)([\s\S]*)",
     command=("q", plugin_category),
     info={
         "header": "Makes your message as sticker quote.",
-        "usage": "{tr}q",
+        "flags": {
+            "r": "use r infront of q to include the previous replied message",
+            "f": "use f infront of q to create fake quote with given user",
+        },
+        "usage": [
+            "{tr}q",
+            "{tr}rq",
+            "{tr}fq <user/reply> <text>",
+            "{tr}frq <user/reply> <text>",
+        ],
+        "examples": ["{tr}fq @jisan7509 hello bad boys and girls"],
     },
 )
 async def stickerchat(catquotes):
     "Makes your message as sticker quote"
     reply = await catquotes.get_reply_message()
-    if not reply:
-        return await edit_or_reply(
-            catquotes, "`I cant quote the message . reply to a message`"
-        )
-    fetchmsg = reply.message
-    repliedreply = None
-    mediatype = media_type(reply)
+    cmd = catquotes.pattern_match.group(1)
+    mediatype = None
+    if cmd in ["rq", "q", "frq"]:
+        if not reply:
+            return await edit_or_reply(
+                catquotes, "`I cant quote the message . reply to a message`"
+            )
+        fetchmsg = reply.message
+        mediatype = await media_type(reply)
+    if cmd == "rq":
+        repliedreply = await reply.get_reply_message()
+    elif cmd == "frq":
+        repliedreply = reply
+    else:
+        repliedreply = None
     if mediatype and mediatype in ["Photo", "Round Video", "Gif"]:
         return await edit_or_reply(catquotes, "`Replied message is not supported now`")
     catevent = await edit_or_reply(catquotes, "`Making quote...`")
-    user = (
-        await catquotes.client.get_entity(reply.forward.sender)
-        if reply.fwd_from
-        else reply.sender
+    if cmd in ["rq", "q"]:
+        try:
+            user = (
+                await catquotes.client.get_entity(reply.forward.sender)
+                if reply.fwd_from
+                else reply.sender
+            )
+        except TypeError:
+            user = Forward_Lock(reply.fwd_from.from_name)
+    else:
+        user, rank = await get_user_from_event(catquotes, secondgroup=True)
+        if not user:
+            return
+        fetchmsg = rank
+        if not fetchmsg and reply:
+            fetchmsg = reply.message
+        if not fetchmsg:
+            return await edit_or_reply(
+                catquotes, "`I cant quote the message . no text is given`"
+            )
+    res, catmsg = await process(
+        fetchmsg, user, catquotes.client, reply, catquotes, repliedreply
     )
-    res, catmsg = await process(fetchmsg, user, catquotes.client, reply, repliedreply)
     if not res:
         return
     outfi = os.path.join("./temp", "sticker.png")
     catmsg.save(outfi)
-    endfi = convert_tosticker(outfi)
-    await catquotes.client.send_file(catquotes.chat_id, endfi, reply_to=reply)
-    await catevent.delete()
-    os.remove(endfi)
-
-
-@catub.cat_cmd(
-    pattern="rq(?:\s|$)([\s\S]*)",
-    command=("rq", plugin_category),
-    info={
-        "header": "Makes your message along with the previous replied message as sticker quote",
-        "usage": "{tr}rq",
-    },
-)
-async def stickerchat(catquotes):
-    "To make sticker message."
-    reply = await catquotes.get_reply_message()
-    if not reply:
-        return await edit_or_reply(
-            catquotes, "`I cant quote the message . reply to a message`"
-        )
-    fetchmsg = reply.message
-    repliedreply = await reply.get_reply_message()
-    mediatype = media_type(reply)
-    if mediatype and mediatype in ["Photo", "Round Video", "Gif"]:
-        return await edit_or_reply(catquotes, "`Replied message is not supported now`")
-    catevent = await edit_or_reply(catquotes, "`Making quote...`")
-    user = (
-        await catquotes.client.get_entity(reply.forward.sender)
-        if reply.fwd_from
-        else reply.sender
+    endfi = await Convert.to_sticker(
+        catquotes, outfi, file="stickerchat.webp", noedits=True
     )
-    res, catmsg = await process(fetchmsg, user, catquotes.client, reply, repliedreply)
-    if not res:
-        return
-    outfi = os.path.join("./temp", "sticker.png")
-    catmsg.save(outfi)
-    endfi = convert_tosticker(outfi)
-    await catquotes.client.send_file(catquotes.chat_id, endfi, reply_to=reply)
+    await catquotes.client.send_file(catquotes.chat_id, endfi[1], reply_to=reply)
     await catevent.delete()
-    os.remove(endfi)
+    os.remove(endfi[1])
 
 
 @catub.cat_cmd(

@@ -1,5 +1,5 @@
 # reverse search and google search  plugin for cat
-import io
+import contextlib
 import os
 import re
 import urllib
@@ -11,9 +11,8 @@ from PIL import Image
 from search_engine_parser import BingSearch, GoogleSearch, YahooSearch
 from search_engine_parser.core.exceptions import NoResultsOrTrafficError
 
-from userbot import BOTLOG, BOTLOG_CHATID, catub
+from userbot import BOTLOG, BOTLOG_CHATID, Convert, catub
 
-from ..Config import Config
 from ..core.managers import edit_delete, edit_or_reply
 from ..helpers.functions import deEmojify
 from ..helpers.utils import reply_id
@@ -30,14 +29,12 @@ async def ParseSauce(googleurl):
     source = opener.open(googleurl).read()
     soup = BeautifulSoup(source, "html.parser")
     results = {"similar_images": "", "best_guess": ""}
-    try:
+    with contextlib.suppress(BaseException):
         for similar_image in soup.findAll("input", {"class": "gLFyf"}):
             url = "https://www.google.com/search?tbm=isch&q=" + urllib.parse.quote_plus(
                 similar_image.get("value")
             )
             results["similar_images"] = url
-    except BaseException:
-        pass
     for best_guess in soup.findAll("div", attrs={"class": "r5a77d"}):
         results["best_guess"] = best_guess.get_text()
     return results
@@ -89,21 +86,21 @@ async def gsearch(q_event):
     try:
         page = page[0]
         page = page.replace("-p", "")
-        match = match.replace("-p" + page, "")
+        match = match.replace(f"-p{page}", "")
     except IndexError:
         page = 1
     try:
         lim = lim[0]
         lim = lim.replace("-l", "")
-        match = match.replace("-l" + lim, "")
+        match = match.replace(f"-l{lim}", "")
         lim = int(lim)
         if lim <= 0:
-            lim = int(5)
+            lim = 5
     except IndexError:
         lim = 5
     #     smatch = urllib.parse.quote_plus(match)
     smatch = match.replace(" ", "+")
-    search_args = (str(smatch), int(page))
+    search_args = str(smatch), page
     gsearch = GoogleSearch()
     bsearch = BingSearch()
     ysearch = YahooSearch()
@@ -138,8 +135,21 @@ async def gsearch(q_event):
     if BOTLOG:
         await q_event.client.send_message(
             BOTLOG_CHATID,
-            "Google Search query `" + match + "` was executed successfully",
+            f"Google Search query `{match}` was executed successfully",
         )
+
+
+@catub.cat_cmd(
+    pattern="gis ([\s\S]*)",
+    command=("gis", plugin_category),
+    info={
+        "header": "Google search in image format",
+        "usage": "{tr}gis <query>",
+        "examples": "{tr}gis cat",
+    },
+)
+async def gis(event):
+    "To search in google and send result in picture."
 
 
 @catub.cat_cmd(
@@ -151,7 +161,7 @@ async def gsearch(q_event):
         "usage": "{tr}grs",
     },
 )
-async def _(event):
+async def grs(event):
     "Google Reverse Search"
     start = datetime.now()
     OUTPUT_STR = "Reply to an image to do Google Reverse Search"
@@ -161,14 +171,21 @@ async def _(event):
         previous_message_text = previous_message.message
         BASE_URL = "http://www.google.com"
         if previous_message.media:
-            downloaded_file_name = await event.client.download_media(
-                previous_message, Config.TMP_DOWNLOAD_DIRECTORY
+            photo = await Convert.to_image(
+                event,
+                previous_message,
+                dirct="./temp",
+                file="grs.png",
             )
-            SEARCH_URL = "{}/searchbyimage/upload".format(BASE_URL)
+            if photo[1] is None:
+                return await edit_delete(
+                    photo[0], "__Unable to extract image from the replied message.__"
+                )
+            SEARCH_URL = f"{BASE_URL}/searchbyimage/upload"
             multipart = {
                 "encoded_image": (
-                    downloaded_file_name,
-                    open(downloaded_file_name, "rb"),
+                    photo[1],
+                    open(photo[1], "rb"),
                 ),
                 "image_content": "",
             }
@@ -177,7 +194,7 @@ async def _(event):
                 SEARCH_URL, files=multipart, allow_redirects=False
             )
             the_location = google_rs_response.headers.get("Location")
-            os.remove(downloaded_file_name)
+            os.remove(photo[1])
         else:
             previous_message_text = previous_message.message
             SEARCH_URL = "{}/searchbyimage?image_url={}"
@@ -225,64 +242,68 @@ async def _(event):
         "usage": "{tr}reverse <count>",
     },
 )
-async def _(img):
+async def reverse(event):
     "Google Reverse Search"
-    reply_to = await reply_id(img)
+    reply_to = await reply_id(event)
     if os.path.isfile("okgoogle.png"):
         os.remove("okgoogle.png")
-    message = await img.get_reply_message()
-    if message and message.media:
-        photo = io.BytesIO()
-        await img.client.download_media(message, photo)
-    else:
-        await edit_or_reply(img, "`Reply to photo or sticker nigger.`")
-        return
-    if photo:
-        catevent = await edit_or_reply(img, "`Processing...`")
-        try:
-            image = Image.open(photo)
-        except OSError:
-            return await catevent.edit("`Unsupported , most likely.`")
-        name = "okgoogle.png"
-        image.save(name, "PNG")
-        image.close()
-        # https://stackoverflow.com/questions/23270175/google-reverse-image-search-using-post-request#28792943
-        searchUrl = "https://www.google.com/searchbyimage/upload"
-        multipart = {"encoded_image": (name, open(name, "rb")), "image_content": ""}
-        response = requests.post(searchUrl, files=multipart, allow_redirects=False)
-        if response != 400:
-            await img.edit(
-                "`Image successfully uploaded to Google. Maybe.`"
-                "\n`Parsing source now. Maybe.`"
-            )
-        else:
-            return await catevent.edit("`Unable to perform reverse search.`")
-        fetchUrl = response.headers["Location"]
-        os.remove(name)
-        match = await ParseSauce(fetchUrl + "&preferences?hl=en&fg=1#languages")
-        guess = match["best_guess"]
-        imgspage = match["similar_images"]
-        if guess and imgspage:
-            await catevent.edit(f"[{guess}]({fetchUrl})\n\n`Looking for this Image...`")
-        else:
-            return await catevent.edit("`Can't find any kind similar images.`")
-        lim = img.pattern_match.group(1) or 3
-        images = await scam(match, lim)
-        yeet = []
-        for i in images:
-            k = requests.get(i)
-            yeet.append(k.content)
-        try:
-            await img.client.send_file(
-                entity=await img.client.get_input_entity(img.chat_id),
-                file=yeet,
-                reply_to=reply_to,
-            )
-        except TypeError:
-            pass
-        await catevent.edit(
-            f"[{guess}]({fetchUrl})\n\n[Visually similar images]({imgspage})"
+    message = await event.get_reply_message()
+    if not message and not message.media:
+        return await edit_or_reply(event, "`Reply to media...`")
+    photo = await Convert.to_image(
+        event,
+        message,
+        dirct="./temp",
+        file="reverse.png",
+    )
+    if photo[1] is None:
+        return await edit_delete(
+            photo[0], "__Unable to extract image from the replied message.__"
         )
+    catevent = await edit_or_reply(event, "`Processing...`")
+    try:
+        image = Image.open(photo[1])
+        os.remove(photo[1])
+    except OSError:
+        return await catevent.edit("`Unsupported , most likely.`")
+    name = "okgoogle.png"
+    image.save(name, "PNG")
+    image.close()
+    # https://stackoverflow.com/questions/23270175/google-reverse-image-search-using-post-request#28792943
+    searchUrl = "https://www.google.com/searchbyimage/upload"
+    multipart = {"encoded_image": (name, open(name, "rb")), "image_content": ""}
+    response = requests.post(searchUrl, files=multipart, allow_redirects=False)
+    if response != 400:
+        await event.edit(
+            "`Image successfully uploaded to Google. Maybe.`"
+            "\n`Parsing source now. Maybe.`"
+        )
+    else:
+        return await catevent.edit("`Unable to perform reverse search.`")
+    fetchUrl = response.headers["Location"]
+    os.remove(name)
+    match = await ParseSauce(f"{fetchUrl}&preferences?hl=en&fg=1#languages")
+    guess = match["best_guess"]
+    imgspage = match["similar_images"]
+    if guess and imgspage:
+        await catevent.edit(f"[{guess}]({fetchUrl})\n\n`Looking for this Image...`")
+    else:
+        return await catevent.edit("`Can't find any kind similar images.`")
+    lim = event.pattern_match.group(1) or 3
+    images = await scam(match, lim)
+    yeet = []
+    for i in images:
+        k = requests.get(i)
+        yeet.append(k.content)
+    with contextlib.suppress(TypeError):
+        await event.client.send_file(
+            entity=await event.client.get_input_entity(event.chat_id),
+            file=yeet,
+            reply_to=reply_to,
+        )
+    await catevent.edit(
+        f"[{guess}]({fetchUrl})\n\n[Visually similar images]({imgspage})"
+    )
 
 
 @catub.cat_cmd(
@@ -310,7 +331,7 @@ async def google_search(event):
             event,
             "__Plox your search query exceeds 200 characters or you search query is empty.__",
         )
-    query = "#12" + input_str
+    query = f"#12{input_str}"
     results = await event.client.inline_query("@StickerizerBot", query)
     await results[0].click(event.chat_id, reply_to=reply_to_id, hide_via=True)
     await event.delete()

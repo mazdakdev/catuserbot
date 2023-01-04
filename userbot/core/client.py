@@ -103,6 +103,7 @@ class CatUserBotClient(TelegramClient):
 
         def decorator(func):  # sourcery no-metrics
             async def wrapper(check):  # sourcery no-metrics
+                # sourcery skip: low-code-quality
                 if groups_only and not check.is_group:
                     return await edit_delete(
                         check, "`I don't think this is a group.`", 10
@@ -113,8 +114,8 @@ class CatUserBotClient(TelegramClient):
                     )
                 try:
                     await func(check)
-                except events.StopPropagation:
-                    raise events.StopPropagation
+                except events.StopPropagation as e:
+                    raise events.StopPropagation from e
                 except KeyboardInterrupt:
                     pass
                 except MessageNotModifiedError:
@@ -171,17 +172,19 @@ class CatUserBotClient(TelegramClient):
                             "date": datetime.datetime.now(),
                         }
                         ftext += "\n\n--------END USERBOT TRACEBACK LOG--------"
-                        command = 'git log --pretty=format:"%an: %s" -5'
                         ftext += "\n\n\nLast 5 commits:\n"
+                        command = 'git log --pretty=format:"%an: %s" -5'
                         output = (await runcmd(command))[:2]
                         result = output[0] + output[1]
                         ftext += result
                         pastelink = await paste_message(
                             ftext, pastetype="s", markdown=False
                         )
-                        text = "**CatUserbot Error report**\n\n"
                         link = "[here](https://t.me/catuserbot_support)"
-                        text += "If you wanna you can report it"
+                        text = (
+                            "**CatUserbot Error report**\n\n"
+                            + "If you wanna you can report it"
+                        )
                         text += f"- just forward this message {link}.\n"
                         text += (
                             "Nothing is logged except the fact of error and date\n\n"
@@ -249,16 +252,18 @@ class CatUserBotClient(TelegramClient):
         self: TelegramClient,
         disable_errors: bool = False,
         edited: bool = False,
+        forword=False,
         **kwargs,
     ) -> callable:  # sourcery no-metrics
         kwargs["func"] = kwargs.get("func", lambda e: e.via_bot_id is None)
+        kwargs.setdefault("forwards", forword)
 
         def decorator(func):
             async def wrapper(check):
                 try:
                     await func(check)
-                except events.StopPropagation:
-                    raise events.StopPropagation
+                except events.StopPropagation as e:
+                    raise events.StopPropagation from e
                 except KeyboardInterrupt:
                     pass
                 except MessageNotModifiedError:
@@ -296,9 +301,11 @@ class CatUserBotClient(TelegramClient):
                         pastelink = await paste_message(
                             ftext, pastetype="s", markdown=False
                         )
-                        text = "**CatUserbot Error report**\n\n"
                         link = "[here](https://t.me/catuserbot_support)"
-                        text += "If you wanna you can report it"
+                        text = (
+                            "**CatUserbot Error report**\n\n"
+                            + "If you wanna you can report it"
+                        )
                         text += f"- just forward this message {link}.\n"
                         text += (
                             "Nothing is logged except the fact of error and date\n\n"

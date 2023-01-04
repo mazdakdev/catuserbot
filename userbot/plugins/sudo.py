@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 
 from telethon.utils import get_display_name
@@ -17,6 +18,7 @@ from ..sql_helper.globals import addgvar, delgvar, gvarstatus
 plugin_category = "tools"
 
 LOGS = logging.getLogger(__name__)
+ENV = bool(os.environ.get("ENV", False))
 
 
 async def _init() -> None:
@@ -208,7 +210,7 @@ async def _(event):
         ],
     },
 )
-async def _(event):  # sourcery no-metrics
+async def _(event):  # sourcery no-metrics  # sourcery skip: low-code-quality
     "To enable cmds for sudo users."
     input_str = event.pattern_match.group(2)
     errors = ""
@@ -226,7 +228,6 @@ async def _(event):  # sourcery no-metrics
             + PLG_INFO["autoprofile"]
             + PLG_INFO["evaluators"]
             + PLG_INFO["execmod"]
-            + PLG_INFO["heroku"]
             + PLG_INFO["profile"]
             + PLG_INFO["pmpermit"]
             + PLG_INFO["custom"]
@@ -238,6 +239,7 @@ async def _(event):  # sourcery no-metrics
             + ["gauth"]
             + ["greset"]
         )
+        flagcmds = flagcmds + PLG_INFO["heroku"] if ENV else flagcmds + PLG_INFO["vps"]
         loadcmds = list(set(totalcmds) - set(flagcmds))
         if len(sudocmds) > 0:
             sqllist.del_keyword_list("sudo_enabled_cmds")
@@ -303,7 +305,7 @@ async def _(event):  # sourcery no-metrics
         ],
     },
 )
-async def _(event):  # sourcery no-metrics
+async def _(event):  # sourcery no-metrics  # sourcery skip: low-code-quality
     "To disable cmds for sudo users."
     input_str = event.pattern_match.group(2)
     errors = ""
@@ -327,7 +329,6 @@ async def _(event):  # sourcery no-metrics
             + PLG_INFO["autoprofile"]
             + PLG_INFO["evaluators"]
             + PLG_INFO["execmod"]
-            + PLG_INFO["heroku"]
             + PLG_INFO["profile"]
             + PLG_INFO["pmpermit"]
             + PLG_INFO["custom"]
@@ -339,6 +340,7 @@ async def _(event):  # sourcery no-metrics
             + ["gauth"]
             + ["greset"]
         )
+        flagcmds = flagcmds + PLG_INFO["heroku"] if ENV else flagcmds + PLG_INFO["vps"]
     elif input_str[0] == "-p":
         catevent = event
         input_str.remove("-p")

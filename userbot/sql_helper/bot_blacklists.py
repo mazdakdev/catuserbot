@@ -19,7 +19,7 @@ class Bot_BlackList(BASE):
         self.first_name = first_name
 
     def __repr__(self):
-        return "<BL %s>" % self.chat_id
+        return f"<BL {self.chat_id}>"
 
 
 Bot_BlackList.__table__.create(checkfirst=True)
@@ -53,8 +53,7 @@ def check_is_black_list(chat_id: int):
 
 def rem_user_from_bl(chat_id: int):
     """remove the user from the blacklist"""
-    s__ = SESSION.query(Bot_BlackList).get(str(chat_id))
-    if s__:
+    if s__ := SESSION.query(Bot_BlackList).get(str(chat_id)):
         SESSION.delete(s__)
         SESSION.commit()
         return True

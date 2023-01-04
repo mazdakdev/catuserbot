@@ -1,5 +1,13 @@
 import base64
+import contextlib
 
+from telethon.errors import (
+    ChannelInvalidError,
+    ChannelPrivateError,
+    ChannelPublicGroupNaError,
+)
+from telethon.tl.functions.channels import GetFullChannelRequest
+from telethon.tl.functions.messages import GetFullChatRequest
 from telethon.tl.functions.messages import ImportChatInviteRequest as Get
 from telethon.tl.types import MessageEntityMentionName
 
@@ -19,14 +27,52 @@ async def reply_id(event):
     return reply_to_id
 
 
+async def get_chatinfo(event, match, catevent):
+    if not match and event.reply_to_msg_id:
+        replied_msg = await event.get_reply_message()
+        if replied_msg.fwd_from and replied_msg.fwd_from.channel_id is not None:
+            match = replied_msg.fwd_from.channel_id
+    if not match:
+        match = event.chat_id
+    with contextlib.suppress(ValueError):
+        match = int(match)
+    try:
+        chat_info = await event.client(GetFullChatRequest(match))
+    except BaseException:
+        try:
+            chat_info = await event.client(GetFullChannelRequest(match))
+        except ChannelInvalidError:
+            await catevent.edit("`Invalid channel/group`")
+            return None
+        except ChannelPrivateError:
+            await catevent.edit(
+                "`This is a private channel/group or I am banned from there`"
+            )
+            return None
+        except ChannelPublicGroupNaError:
+            await catevent.edit("`The given Channel or Supergroup doesn't exist`")
+            return None
+        except (TypeError, ValueError):
+            await catevent.edit("**Error:**\n__Can't fetch the chat__")
+            return None
+    return chat_info
+
+
 async def get_user_from_event(
-    event, catevent=None, secondgroup=None, nogroup=False, noedits=False
-):  # sourcery no-metrics
+    event,
+    catevent=None,
+    secondgroup=None,
+    thirdgroup=None,
+    nogroup=False,
+    noedits=False,
+):  # sourcery no-metrics  # sourcery skip: low-code-quality
     if catevent is None:
         catevent = event
     if nogroup is False:
         if secondgroup:
             args = event.pattern_match.group(2).split(" ", 1)
+        elif thirdgroup:
+            args = event.pattern_match.group(3).split(" ", 1)
         else:
             args = event.pattern_match.group(1).split(" ", 1)
     extra = None
@@ -80,8 +126,6 @@ async def get_user_from_event(
 
 async def checking(catub):
     cat_c = base64.b64decode("QUFBQUFGRV9vWjVYVE5fUnVaaEtOdw==")
-    try:
+    with contextlib.suppress(BaseException):
         cat_channel = Get(cat_c)
         await catub(cat_channel)
-    except BaseException:
-        pass

@@ -1,7 +1,7 @@
 try:
     from . import BASE, SESSION
-except ImportError:
-    raise AttributeError
+except ImportError as e:
+    raise AttributeError from e
 from sqlalchemy import Column, String, UnicodeText
 
 
@@ -41,10 +41,9 @@ def addgvar(variable, value):
 
 
 def delgvar(variable):
-    rem = (
+    if rem := (
         SESSION.query(Globals)
         .filter(Globals.variable == str(variable))
         .delete(synchronize_session="fetch")
-    )
-    if rem:
+    ):
         SESSION.commit()

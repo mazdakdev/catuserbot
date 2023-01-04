@@ -1,5 +1,6 @@
 # plugin by @deleteduser420
 # ported to telethon by @mrconfused (@sandy1709)
+import contextlib
 import os
 
 from userbot import catub
@@ -24,7 +25,7 @@ async def file_data(reply):
         hmm += f"Size  :  {humanbytes(reply.file.size)}<br>"
     if reply.date:
         hmm += f"Date  :  {_format.yaml_format(reply.date)}<br>"
-    if reply.file.id:
+    with contextlib.suppress(AttributeError):
         hmm += f"Id  :  {reply.file.id}<br>"
     if reply.file.ext:
         hmm += f"Extension  :  '{reply.file.ext}'<br>"
