@@ -16,7 +16,7 @@ from ..sql_helper import global_collectionjson as sql
 from ..sql_helper import global_list as sqllist
 from ..sql_helper import pmpermit_sql
 from ..sql_helper.globals import addgvar, delgvar, gvarstatus
-from . import BOTLOG_CHATID, mention
+from . import BOTLOG_CHATID
 
 plugin_category = "utils"
 LOGS = logging.getLogger(__name__)
