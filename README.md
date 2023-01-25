@@ -15,8 +15,10 @@ A simple Telegram userbot based on Telethon .
 [![GitHub forks](https://img.shields.io/github/forks/TgCatUB/catuserbot?&style=flat-square&logo=github)](https://github.com/TgCatUB/catuserbot/fork)
 [![GitHub stars](https://img.shields.io/github/stars/TgCatUB/catuserbot?&style=flat-square&logo=github)](https://github.com/TgCatUB/catuserbot/stargazers)
 
+## TODO:
 
-[ ] Add tts with deepfake
+- [ ] Add tts with deepfake
+
 - - - -
 ## How to deploy catuserbot
 ### Heroku Deploy
